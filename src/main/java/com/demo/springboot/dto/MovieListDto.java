@@ -19,11 +19,6 @@ public class MovieListDto {
 
     public void addMovie(MovieDto newMovie){
         this.movies.add(newMovie);
-        incrementId();
-    }
-
-    public void delMovie(int id){
-        movies.remove(id);
     }
 
     @Override

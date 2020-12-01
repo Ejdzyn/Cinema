@@ -7,6 +7,7 @@ import com.demo.springboot.services.CinemaService;
 import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,28 +36,28 @@ public class MovieApiController {
         return ResponseEntity.ok().body(cinemaService.getAllMovies());    // = new ResponseEntity<>(movies, HttpStatus.OK);
     }
 
-    @GetMapping("/movies/{id}/title/{title}")
-    public ResponseEntity<MovieDto> getMovie(@PathVariable("id") Integer id, @PathVariable("title") String title) {
+    @GetMapping("/movies/{id}")
+    public ResponseEntity<MovieDto> getMovie(@PathVariable("id") Integer id) {
         LOG.info("--- id: {}", id);
-        LOG.info("--- title: {}", title);
 
-        MovieDto result = cinemaService.getMovie(id,title);
+        MovieDto result = cinemaService.getMovie(id);
 
         if(result==null){
-            LOG.info("NIE OK");
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else {
-            LOG.info("OK");
             return ResponseEntity.ok().body(result);
         }
     }
 
     @DeleteMapping("/movies/{id}")
-    public ResponseEntity<Void> delMovie(@PathVariable("id") Integer id){
+    public ResponseEntity<String> delMovie(@PathVariable("id") Integer id){
 
-        cinemaService.delMovie(id);
+        if(cinemaService.delMovie(id)){
+            return ResponseEntity.ok("DELETED");
+        } else {
+            return new ResponseEntity<>("MOVIE NOT FOUND", HttpStatus.NOT_FOUND);
+        }
 
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/movies/{id}")
@@ -64,18 +65,18 @@ public class MovieApiController {
         LOG.info("--- id: {}", id);
         //LOG.info("--- title: {}", title);
 
-        cinemaService.updateMovie(id,createMovieDto);
-
-        return ResponseEntity.ok().build();
+        if(cinemaService.updateMovie(id,createMovieDto)){
+            return ResponseEntity.ok().build();
+        } else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/movies")
     public ResponseEntity<Void> createMovie(@RequestBody CreateMovieDto createMovieDto) throws URISyntaxException {
-        //LOG.info("--- id: {}", createMovieDto.getMovieId());
+        createMovieDto.setTitle(createMovieDto.getTitle());
         LOG.info("--- title: {}", createMovieDto.getTitle());
 
         cinemaService.addMovie(createMovieDto);
-
-        return ResponseEntity.created(new URI("/movies/" + createMovieDto.getTitle())).build();
+        return ResponseEntity.ok().build();
+        //return ResponseEntity.created(new URI("/movies/" + createMovieDto.getTitle())).build(); //-- illegal character, bo zamienia spacje na %20 a w uri # i % sa znakami wyjatkowymi czy jakos tak
     }
 }

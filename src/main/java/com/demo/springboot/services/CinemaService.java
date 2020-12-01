@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CinemaService implements MovieServices {
 
-    private final MovieListDto movies;
+    private MovieListDto movies;
 
     public CinemaService() {
 
@@ -19,8 +19,8 @@ public class CinemaService implements MovieServices {
                 1999,
                 "https://fwcdn.pl/fpo/30/02/33002/6988507.6.jpg")
         );
-
         movies = new MovieListDto(moviesList);
+        movies.incrementId();
     }
 
     @Override
@@ -29,19 +29,23 @@ public class CinemaService implements MovieServices {
     }
 
     @Override
-    public MovieDto getMovie(Integer id,String title) {
+    public MovieDto getMovie(Integer id) {
 
-        if(movies.getMovies().stream().anyMatch(movieDto -> movieDto.getMovieId().equals(id) && movieDto.getTitle().equals(title))){
-            return movies.getMovies().stream().filter(movieDto -> movieDto.getMovieId().equals(id) && movieDto.getTitle().equals(title)).findFirst().get();
+        if(movies.getMovies().stream().anyMatch(movieDto -> movieDto.getMovieId().equals(id))){
+            return movies.getMovies().stream().filter(movieDto -> movieDto.getMovieId().equals(id)).findFirst().get();
         } else {
             return null;
         }
+
+        /*for(MovieDto movie : movies.getMovies()){
+            if(movie.getMovieId().equals(id)){
+
+            }
+        }*/
     }
 
     @Override
-    public void updateMovie(Integer id, CreateMovieDto newMovie) {
-        //movies.getMovies().set(id,new MovieDto());
-
+    public Boolean updateMovie(Integer id, CreateMovieDto newMovie) {
         if(movies.getMovies().stream().findAny().filter(MovieDto -> MovieDto.getMovieId().equals(id)).isPresent()){
             //mozna uzyc filtra
             for(MovieDto movie : movies.getMovies()){
@@ -49,19 +53,29 @@ public class CinemaService implements MovieServices {
                     movie.setImage(newMovie.getImage());
                     movie.setYear(newMovie.getYear());
                     movie.setTitle(newMovie.getTitle());
-                    break;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     @Override
     public void addMovie(CreateMovieDto newMovie) {
+        movies.incrementId();
         movies.addMovie(new MovieDto(movies.getId(),newMovie.getTitle(),newMovie.getYear(),newMovie.getImage()));
     }
 
     @Override
-    public void delMovie(int id) {
-        movies.delMovie(id);
+    public Boolean delMovie(int id) {
+        //movies.delMovie(id);
+        for(MovieDto movie : movies.getMovies()){
+            if(movie.getMovieId().equals(id)){
+                movies.getMovies().remove(movie);
+                return true;
+            }
+        }
+        return false;
     }
 }

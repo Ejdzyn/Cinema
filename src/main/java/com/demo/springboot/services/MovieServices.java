@@ -8,12 +8,12 @@ public interface MovieServices {
 
     MovieListDto getAllMovies();
 
-    MovieDto getMovie(Integer id, String title);
+    MovieDto getMovie(Integer id);
 
-    void updateMovie(Integer id, CreateMovieDto newMovie);
+    Boolean updateMovie(Integer id, CreateMovieDto newMovie);
 
     void addMovie(CreateMovieDto newMovie);
 
-    void delMovie(int id);
+    Boolean delMovie(int id);
 
 }
