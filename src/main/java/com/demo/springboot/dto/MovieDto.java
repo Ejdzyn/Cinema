@@ -1,6 +1,7 @@
 package com.demo.springboot.dto;
 
 public class MovieDto {
+
     private Integer movieId;
     private String title;
     private Integer year;
@@ -31,4 +32,21 @@ public class MovieDto {
     public String getImage() {
         return image;
     }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
 }
